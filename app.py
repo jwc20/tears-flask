@@ -101,7 +101,7 @@ def get_job_listings_paginated(page: int, per_page: int) -> Tuple[List[Dict], in
             cursor.execute("""
                 SELECT company_name, job_title, job_link 
                 FROM job_listings 
-                ORDER BY created_at DESC
+                ORDER BY id DESC
                 LIMIT %s OFFSET %s
             """, (per_page, (page - 1) * per_page))
 
