@@ -131,6 +131,11 @@
         .next_page {
             padding: 5px;
         }
+
+        ul {
+              list-style-type: none !important;
+        }
+
     </style>
 </head>
 <body>
@@ -164,7 +169,7 @@
 
         {% if pagination %}
         <div class="pagination">
-            {{ pagination.links | safe }}
+            {{ pagination.links }}
         </div>
         {% endif %}
     </div>
