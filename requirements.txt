@@ -1,3 +1,4 @@
-python-dotenv~=1.0.1
-psycopg2~=2.9.10
-flask~=3.0.3
+flask
+flask-paginate
+psycopg2-binary
+python-dotenv
