@@ -1,12 +1,15 @@
 from flask import Flask, g, render_template, current_app, request
 from flask_paginate import Pagination
 from dotenv import load_dotenv
-import psycopg2
-from psycopg2.extras import RealDictCursor
 import logging
 from typing import List, Dict, Tuple
 from contextlib import contextmanager
 import os
+
+from sqlalchemy import create_engine
+
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +18,10 @@ DATABASE = os.getenv("DATABASE")
 DATABASE_HOST = os.getenv("DATABASE_HOST")
 DATABASE_USERNAME = os.getenv("DATABASE_USERNAME")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
+
+connection_str = f'postgresql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@{DATABASE_HOST}:6543/{DATABASE}'
+
+
 PER_PAGE = 15
 
 
@@ -53,13 +60,14 @@ def index():
 
 
 def get_db_connection():
-    return psycopg2.connect(
-        database=DATABASE,
-        host=DATABASE_HOST,
-        user=DATABASE_USERNAME,
-        password=DATABASE_PASSWORD,
-        cursor_factory=RealDictCursor
-    )
+    return create_engine(connection_str)
+    # return psycopg2.connect(
+    #     database=DATABASE,
+    #     host=DATABASE_HOST,
+    #     user=DATABASE_USERNAME,
+    #     password=DATABASE_PASSWORD,
+    #     cursor_factory=RealDictCursor
+    # )
 
 
 def get_db():
@@ -79,17 +87,20 @@ def close_db(e=None):
 
 @contextmanager
 def get_db_cursor():
-    conn = get_db()
-    try:
-        cursor = conn.cursor()
-        yield cursor
-        conn.commit()
-    except psycopg2.Error as e:
-        conn.rollback()
-        logging.error(f"Database operation failed: {str(e)}")
-        raise DatabaseError("Database operation failed") from e
-    finally:
-        cursor.close()
+
+# @contextmanager
+# def get_db_cursor():
+#     conn = get_db()
+#     try:
+#         cursor = conn.cursor()
+#         yield cursor
+#         conn.commit()
+#     except psycopg2.Error as e:
+#         conn.rollback()
+#         logging.error(f"Database operation failed: {str(e)}")
+#         raise DatabaseError("Database operation failed") from e
+#     finally:
+#         cursor.close()
 
 
 def get_job_listings_paginated(page: int, per_page: int) -> Tuple[List[Dict], int]:
